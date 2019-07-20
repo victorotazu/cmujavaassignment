@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class Main {
 
@@ -10,11 +9,10 @@ public class Main {
     private static String outputPath = "output/results.csv";
     private static String separator = ",";
     private static String lineSeparator = System.lineSeparator();
-    private static Boolean enclosedByQuotes = true;
     private static Integer firstLineAt = 1;
 
 
-    public static void main(String[] args) throws MalformedFileException {
+    public static void main(String[] args) {
         File input = new File(inputPath);
         File newUsers = new File(newUsersPath);
 
@@ -64,7 +62,6 @@ public class Main {
                     String listOfMovies = listToString(recommendedMovies.subList(0, moviesToRecommend));
                     row = row.replace("?", listOfMovies);
                 }
-
                 newUsersContent.set(i, row);
             }
 
