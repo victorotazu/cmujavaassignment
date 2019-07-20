@@ -5,8 +5,8 @@ import java.util.stream.Stream;
 public class Main {
 
     private static String inputPath = "input/RatingsInput.csv";
-    private static String stagingPath = "staging/staging1.csv";
     private static String newUsersPath = "input/NewUsers.csv";
+    private static String stagingPath = "output/staging1.csv";
     private static String outputPath = "output/results.csv";
     private static String separator = ",";
     private static String lineSeparator = System.lineSeparator();
@@ -26,7 +26,7 @@ public class Main {
             List<String> rawData = inputData.getContent();
             inputData.setContent(cleanup(rawData));
             // Store data in the staging area
-            saveStagingFile(inputData, stagingPath);
+            saveFile(inputData, stagingPath);
             // parseContent returns the following data structure
             // HashMap<Age, HashMap<Rating, MovieList>>
             // 32 : {5: ["M1","M2","M3"], 4: ["M4". "M5"]}, 20: {5: ...}
@@ -37,42 +37,39 @@ public class Main {
             MovieRatingFile outputData = readFile(newUsers);
             String[] tokens;
 
-            try {
-                FileWriter fw = new FileWriter(outputPath, false);
+            List<String> newUsersContent = outputData.getContent();
+            // Iterate the newUsers file content to replace the ? character
+            // with the list of recommended movies by age and according to
+            // the number of movies to recommend
+            for(int i = 0; i < newUsersContent.size(); i++){
+                String row = newUsersContent.get(i);
+                // Need to split the comma separated values in order
+                // to get the corresponding params
+                tokens = row.split(separator);
+                Integer userAge = Integer.parseInt(tokens[1]);
+                Integer moviesToRecommend = Integer.parseInt(tokens[2]);
 
-                fw.write(outputData.getHeader() + lineSeparator);
-
-                for (String row : outputData.getContent()) {
-                    tokens = row.split(separator);
-                    // Get params
-                    Integer userAge = Integer.parseInt(tokens[1]);
-                    Integer moviesToRecommend = Integer.parseInt(tokens[2]);
-
-                    ArrayList<String> recommendedMovies = getRecommendedMoviesByAge(movieRatings, userAge);
-
-                    if (!movieRatings.containsKey(userAge)) {
-                        userAge = getClosestAge(movieRatings, userAge);
-                    }
-
-                    recommendedMovies = getRecommendedMoviesByAge(movieRatings, userAge);
-
-                    if (recommendedMovies.size() > 0) {
-
-                        if (moviesToRecommend > recommendedMovies.size())
-                            moviesToRecommend = recommendedMovies.size();
-
-                        String listOfMovies = listToString(recommendedMovies.subList(0, moviesToRecommend));
-                        row = row.replace("?", listOfMovies);
-                    }
-
-                    fw.write(row + lineSeparator);
+                // If the target age doesn't exist in the data structure
+                // then we'll need to get the closest age bucket
+                if (!movieRatings.containsKey(userAge)) {
+                    userAge = getClosestAge(movieRatings, userAge);
                 }
-                fw.flush();
-                fw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                // Gets a list of recommended movies by age
+                ArrayList<String> recommendedMovies = getRecommendedMoviesByAge(movieRatings, userAge);
+
+                if (recommendedMovies.size() > 0) {
+                    if (moviesToRecommend > recommendedMovies.size())
+                        moviesToRecommend = recommendedMovies.size();
+
+                    String listOfMovies = listToString(recommendedMovies.subList(0, moviesToRecommend));
+                    row = row.replace("?", listOfMovies);
+                }
+
+                newUsersContent.set(i, row);
             }
 
+            outputData.setContent(newUsersContent);
+            saveFile(outputData, outputPath);
         }
     }
 
@@ -84,33 +81,28 @@ public class Main {
     }
 
     static Integer getClosestAge(HashMap<Integer, HashMap> ratingsMap, Integer userAge) {
-
+        // Sort the HaspMap by age
         TreeMap<Integer, HashMap> sortedAge = new TreeMap<>(ratingsMap);
         Integer delta, minDistance, minDistanceKey;
         minDistance = 100;
         minDistanceKey = userAge;
-
-        for (Map.Entry<Integer, HashMap> entry : sortedAge.descendingMap().entrySet()
-        ) {
+        // Iterate the map to find the closest (minimum distance) age group in the map
+        for (Map.Entry<Integer, HashMap> entry : sortedAge.descendingMap().entrySet()) {
             delta = Math.abs(entry.getKey() - userAge);
 
             if (delta < minDistance) {
                 minDistance = delta;
                 minDistanceKey = entry.getKey();
             }
-
         }
-
         return minDistanceKey;
-
     }
 
     static HashMap<Integer, HashMap> parseContent(MovieRatingFile cleanData) {
         String[] tokens;
         HashMap<Integer, HashMap> ageMap = new HashMap<>();
 
-        for (String line : cleanData.getContent()
-        ) {
+        for (String line : cleanData.getContent()) {
             tokens = line.split(separator);
             // read params
             Integer rating = Integer.parseInt(tokens[6]);
@@ -193,16 +185,13 @@ public class Main {
 
     }
 
-    static void saveStagingFile(MovieRatingFile cleanContent, String filePath) {
+    static void saveFile(MovieRatingFile cleanContent, String filePath) {
         try {
             FileWriter fw = new FileWriter(filePath);
-            fw.write(cleanContent.getHeader());
-            fw.write("\n");
+            fw.write(cleanContent.getHeader() + lineSeparator);
             fw.flush();
-            for (String line : cleanContent.getContent()
-            ) {
-                fw.write(line);
-                fw.write("\n");
+            for (String line : cleanContent.getContent()) {
+                fw.write(line + lineSeparator);
             }
 
             fw.flush();
@@ -226,30 +215,6 @@ public class Main {
         }
 
         return data;
-    }
-
-    static MovieRating ProcessLine(String line) throws MalformedFileException {
-        String[] tokens;
-        if (enclosedByQuotes)
-            tokens = line.split(",(?=(?:[^\\\"]*\\\"[^\\\"]*\\\")*(?![^\\\"]*\\\"))");
-        else
-            tokens = line.split(separator);
-
-        if (tokens.length != 6)
-            throw new MalformedFileException("Malformed csv file");
-
-        MovieRating mr = new MovieRating();
-        mr.setUserId(Integer.parseInt(tokens[0]));
-        mr.setUserName(tokens[1]);
-        mr.setUserAge(Integer.parseInt(tokens[2]));
-        String[] movie = tokens[4].split(",");
-
-        mr.setMovieID(Integer.parseInt(movie[0].replace("\"", "")));
-        mr.setMovieName(capitalizeWord(movie[1].replace("\"", "")));
-
-        mr.setRating(Byte.parseByte(tokens[5]));
-
-        return mr;
     }
 
     public static String capitalizeWord(String str) {

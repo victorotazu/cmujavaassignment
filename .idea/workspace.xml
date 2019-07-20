@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="18383a01-cd44-434a-ba0e-106a9b03577c" name="Default Changelist" comment="" />
+    <list default="true" id="18383a01-cd44-434a-ba0e-106a9b03577c" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/staging/staging1.csv" beforeDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,8 +20,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1564">
-              <caret line="67" column="50" selection-start-line="67" selection-start-column="50" selection-end-line="67" selection-end-column="50" />
+            <state relative-caret-position="3415">
+              <caret line="190" column="61" selection-start-line="190" selection-start-column="48" selection-end-line="190" selection-end-column="61" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -62,6 +65,7 @@
     <findStrings>
       <find>cleanup</find>
       <find>cleanData</find>
+      <find>lineseparator</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -124,6 +128,9 @@
       <pane id="Scope" />
     </panes>
   </component>
+  <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+  </component>
   <component name="RunDashboard">
     <option name="ruleStates">
       <list>
@@ -171,8 +178,8 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32971212" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.39978272" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32971212" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39978272" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -265,8 +272,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1564">
-          <caret line="67" column="50" selection-start-line="67" selection-start-column="50" selection-end-line="67" selection-end-column="50" />
+        <state relative-caret-position="3415">
+          <caret line="190" column="61" selection-start-line="190" selection-start-column="48" selection-end-line="190" selection-end-column="61" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
